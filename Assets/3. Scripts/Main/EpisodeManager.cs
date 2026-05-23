@@ -4,11 +4,24 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class EpisodeManager : MonoBehaviour
 {
     Division targetdivision;
     Episode episode;
+    public enum feels
+    {
+        normal,
+        happy,
+        sad,
+        angry,
+        surprised,
+        shy,
+        tired,
+        menhera
+    }
+    Dictionary<feels, Sprite> feeling = new Dictionary<feels, Sprite>();
 
     int talktime;
     bool talkingyet;
@@ -16,6 +29,7 @@ public class EpisodeManager : MonoBehaviour
     int selecttime;
     bool isnormaltalk;
     string log;
+    Select sb;
 
     [SerializeField] GameObject talkP;
     [SerializeField] Image charimage;
@@ -24,6 +38,9 @@ public class EpisodeManager : MonoBehaviour
 
     [SerializeField] Transform selects;
     [SerializeField] GameObject select;
+
+    [SerializeField] MainManager Main;
+    float plushogamdo;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +51,7 @@ public class EpisodeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
             if (talkP.activeSelf && !talkingyet)
             {
@@ -47,38 +64,65 @@ public class EpisodeManager : MonoBehaviour
     {
         targetdivision = div;
         episode = targetdivision.episodes[targetdivision.episodeCount];
-       
+
         talktime = 0;
         selecttime = 0;
         isnormaltalk = true;
-        charimage.sprite = targetdivision.me.charactor;
+        sb = null;
+        plushogamdo = 0;
 
-        talkP.SetActive(true); 
+        foreach(Sprite sp in targetdivision.me.charactorImages)
+        {
+            int start = sp.name.IndexOf('_');
+            string a = sp.name.Substring(start, sp.name.Length - start);
+
+            feels feel;
+            if (Enum.TryParse(a, out feel))
+            {
+                feeling[feel] = sp;
+            }
+        }
+
+        talkP.SetActive(true);
+        selects.gameObject.SetActive(true);
         SetNextTalk();
 
         talkP.GetComponent<RectTransform>().localPosition = new Vector3(2000, 0, 0);
-        StartCoroutine(MoveAnimation(talkP, new Vector3(0, 0, 0),1.5f));
+        StartCoroutine(MoveAnimation(talkP, new Vector3(0, 0, 0), 1.5f, null));
     }
 
-    IEnumerator MoveAnimation(GameObject what, Vector3 target, float speed)
+    IEnumerator MoveAnimation(GameObject what, Vector3 target, float speed, Action action)
     {
-        while(what.transform.position != target)
+        while (what.transform.position != target)
         {
             what.transform.position = Vector3.MoveTowards(what.transform.position, target, speed);
             yield return null;
         }
+
+        action?.Invoke();
     }
 
     void SetNextTalk()
     {
         if (talktime >= episode.texts.Length)
         {
-            EndTalk();
+            EpisodeEnd();
         }
         else
         {
-            talkingyet = true;
             Action action = null;
+            SetFeels(feels.normal);
+
+            if(log.Contains("(") && log.Contains(")"))
+            {
+                int start = log.IndexOf('(');
+                int end = log.IndexOf(')');
+
+                string result = log.Substring(start + 1, end - start - 1);
+
+                SetFeels((feels)Enum.Parse(typeof(feels), result));
+            }
+
 
             if (isnormaltalk)
             {
@@ -99,10 +143,40 @@ public class EpisodeManager : MonoBehaviour
             }
             else
             {
-                action = null;
-                Talking(log, action);
+                if(sb !=  null)
+                {
+                    if (oneselecttime >= sb.selectedlog.Length)
+                    {
+                        OneTalkEnd();
+                        SetNextTalk();
+                    }
+                    else
+                    {
+                        if (oneselecttime == 0)
+                        {
+                            if (sb.iscorrect)
+                            {
+                                Correct();
+                            }
+                            else
+                            {
+                                Miss();
+                            }
+                        }
+
+                        log = sb.selectedlog[oneselecttime];
+
+                        action = () => oneselecttime++;
+                        Talking(log, action);
+                    }
+                }
             }
         }
+    }
+
+    void SetFeels(feels what)
+    {
+        charimage.sprite = feeling[what];
     }
 
     void SetSelect()
@@ -124,7 +198,7 @@ public class EpisodeManager : MonoBehaviour
             pre.transform.SetSiblingIndex(0);
             pre.GetComponent<SelectButton>().myselect = nowselect[i];
             pre.transform.GetComponentInChildren<TMP_Text>().text = nowselect[i].selectname;
-            pre.GetComponent<Button>().onClick.AddListener(() => SetSelectTalk(gameObject));
+            pre.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SetSelectTalk(pre));
         }
 
         isnormaltalk = false;
@@ -134,35 +208,13 @@ public class EpisodeManager : MonoBehaviour
 
     void SetSelectTalk(GameObject you)
     {
-        Debug.Log(you.name, you.GetComponent<SelectButton>().myselect);
-        Select sb = you.GetComponent<SelectButton>().myselect;
-
-        if (oneselecttime >= sb.selectedlog.Length)
-        {
-            OneTalkEnd();
-        }
-        else
-        {
-            if(oneselecttime == 0)
-            {
-                if(sb.iscorrect)
-                {
-                    Correct();
-                }
-                else
-                {
-                    Miss();
-                }
-            }
-
-            log = sb.selectedlog[oneselecttime];
-            oneselecttime++;
-        }
+        sb = you.GetComponent<SelectButton>().myselect;
+        you.transform.parent.gameObject.SetActive(false);
+        SetNextTalk();
     }
 
     void OneTalkEnd()
     {
-        talkingyet = false;
         isnormaltalk = true;
         talktime++;
     }
@@ -188,6 +240,7 @@ public class EpisodeManager : MonoBehaviour
             nameT.text = targetdivision.me.name;
         }
 
+        talkingyet = true;
         StartCoroutine(TypeText(log, action));
     }
 
@@ -201,27 +254,30 @@ public class EpisodeManager : MonoBehaviour
             yield return new WaitForSeconds(0.05f); // 글자 사이에 딜레이
         }
 
+        talkingyet = false;
         action?.Invoke();
     }
 
     void Correct()
     {
-        targetdivision.hogamdo += targetdivision.hogamdo / 2;
-        MoneyManager.Money.moneyRise += targetdivision.hogamdo;
+        targetdivision.hogamdo += targetdivision.hogamdo / 3;
+        plushogamdo += targetdivision.hogamdo;
     }
 
     void Miss()
     {
         targetdivision.hogamdo -= targetdivision.hogamdo / 5;
-        MoneyManager.Money.moneyRise += targetdivision.hogamdo;
+        plushogamdo += targetdivision.hogamdo;
     }
 
-    void EpisodeHappyEnd()
+    void EpisodeEnd()
     {
-        targetdivision.hogamdo *= 3;
-        MoneyManager.Money.moneyRise += targetdivision.hogamdo;
+        targetdivision.hogamdo *= 2;
+        Main.GetAllHogamdo();
+        StartCoroutine(MoneyManager.Money.HogamdoToMoney(plushogamdo));
 
         targetdivision.episodeCount++;
+        StartCoroutine(MoveAnimation(talkP, new Vector3(-25, 0, 0), 1.5f, EndTalk));
     }
 
     public void EndTalk()

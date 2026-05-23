@@ -17,4 +17,8 @@ public class SelectButton : MonoBehaviour
     {
         
     }
+    void OnDisable()
+    {
+        Destroy(gameObject);
+    }
 }

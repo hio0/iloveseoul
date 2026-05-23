@@ -8,9 +8,12 @@ public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager Money;
 
-    public float money = 0;
-    public float moneyRise = 1;
+    public float money;
+    public float hogamdo;
     [SerializeField] float moneytimer;
+
+    public TMP_Text moneyT;
+    public TMP_Text hogamdoT;
 
     private void Awake()
     {
@@ -27,14 +30,14 @@ public class MoneyManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         moneytimer += Time.deltaTime;
-        if(moneytimer >= 1f)
+        if (moneytimer >= 1f)
         {
             PlusMoney();
             moneytimer = 0f;
@@ -43,6 +46,16 @@ public class MoneyManager : MonoBehaviour
 
     void PlusMoney()
     {
-        money += moneyRise;
+        money += hogamdo;
+        moneyT.text = $"돈 : <b>{money.ToString("F1")}</b>";
+    }
+
+    public IEnumerator HogamdoToMoney(float much)
+    {
+        hogamdoT.text = $"호감도가 조금 오른 것 같다...! <b>({hogamdo.ToString("F1")}/s -> {much.ToString("F1")}/s)</b>";
+        yield return new WaitForSeconds(3f);
+
+        hogamdo = much;
+        hogamdoT.text = $"호감도: <b>{hogamdo.ToString("F1")}/s</b>";
     }
 }

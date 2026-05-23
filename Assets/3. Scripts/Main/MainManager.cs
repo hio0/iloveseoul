@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MainManager : MonoBehaviour
@@ -18,11 +19,18 @@ public class MainManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            
+         
     }
 
-    public void GoToTalkScene()
+    public void GetAllHogamdo()
     {
+        allhogamdo = 0;
 
+        foreach(Division div  in divisons)
+        {
+            allhogamdo += div.hogamdo;
+        }
+
+        MoneyManager.Money.hogamdo = allhogamdo;
     }
 }
