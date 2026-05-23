@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class UIInterFace : MonoBehaviour
 {
-    public interface ITalckdata
+    public interface IData
     {
-        public Sprite sprite { get; set; }
+        Division divison { get; set; }
+
+        float hogamdo { get; set; }
     }
 }

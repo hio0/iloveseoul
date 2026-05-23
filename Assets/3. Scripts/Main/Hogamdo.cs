@@ -1,13 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MainManager : MonoBehaviour
+public class Hogamdo : MonoBehaviour
 {
-    public Division[] divisons;
-
-    public float allhogamdo;
+    public Division division;
 
     // Start is called before the first frame update
     void Start()
@@ -18,11 +15,11 @@ public class MainManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            
+        
     }
 
-    public void GoToTalkScene()
+    void MoneySet()
     {
-
+        MoneyManager.Money.moneyRise += division.hogamdo;
     }
 }
