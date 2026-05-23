@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu]
 public class Division : ScriptableObject
 {
+    public Speaker me;
+
     public int episodeCount;
 
     public float hogamdo;

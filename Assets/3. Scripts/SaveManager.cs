@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Data
@@ -17,9 +18,11 @@ public class SaveManager : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
+    void SaveData()
     {
-        
+        string json = JsonUtility.ToJson(data);
+
+        string filepath = Path.Combine(Application.persistentDataPath, "savedata.json");
+        File.WriteAllText(filepath, json);
     }
 }

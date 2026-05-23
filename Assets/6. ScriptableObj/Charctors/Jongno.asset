@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53b883eae8d87d946a5aedf48a0d8aba, type: 3}
   m_Name: Jongno
   m_EditorClassIdentifier: 
-  charactor: {fileID: 0}
+  charactor: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
   name: "\uC885\uB85C\uAD6C"

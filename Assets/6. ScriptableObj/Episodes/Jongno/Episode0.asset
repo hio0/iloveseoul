@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d86ef726ec2bb1340be9fc0a470d9b84, type: 3}
   m_Name: Episode0
   m_EditorClassIdentifier: 
-  speakers:
-  - {fileID: 11400000, guid: 89297ecfffa934a4db492f2793528146, type: 2}
-  texts: []
+  texts:
+  - "\uBC18\uAC11\uC2B5\uB2C8\uB2E4"
+  - "#*(\uB300\uB2F5\uC744 \uD558\uC790)"
+  selects:
+  - {fileID: 11400000, guid: 3a6ea38751daab848834e2b01d4ed04d, type: 2}
+  - {fileID: 11400000, guid: 9f59746b662328d45bd2f90509f29d8f, type: 2}

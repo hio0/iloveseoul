@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c09c6bdf717ef343b22abdc82c29545, type: 3}
   m_Name: Jongno
   m_EditorClassIdentifier: 
+  me: {fileID: 11400000, guid: 89297ecfffa934a4db492f2793528146, type: 2}
   episodeCount: 0
-  defaulthogamdo: 10
-  episodes: []
+  hogamdo: 10
+  episodes:
+  - {fileID: 11400000, guid: ba4e95c56336b264a93bf700f5f3755d, type: 2}

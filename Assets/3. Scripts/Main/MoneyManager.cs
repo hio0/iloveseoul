@@ -17,7 +17,6 @@ public class MoneyManager : MonoBehaviour
         if (Money == null)
         {
             Money = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {

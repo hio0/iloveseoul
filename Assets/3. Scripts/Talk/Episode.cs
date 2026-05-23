@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class Episode : ScriptableObject
 {
-    public Speaker[] speakers;
-
     public string[] texts;
+
+    public Select[] selects;
 }
