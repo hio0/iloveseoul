@@ -43,27 +43,35 @@ public class MoneyManager : MonoBehaviour
             moneytimer = 0f;
         }
 
-        if(money < 0)
+        moneyT.text = $"돈 : <b>{money.ToString("F1")}</b>";
+        hogamdoT.text = $"호감도: <b>{hogamdo.ToString("F1")}/s</b>";
+
+        if (money < 0)
         {
             money = 0;
-            moneyT.text = $"돈 : <b>{money.ToString("F1")}</b>";
         }
         else if(hogamdo < 0)
         {
             hogamdo = 0;
-            hogamdoT.text = $"호감도: <b>{hogamdo.ToString("F1")}/s</b>";
+        }
+
+        if (money >= 100000)
+        {
+            money = 100000;
+        }
+        else if (hogamdo >= 50000)
+        {
+            hogamdo = 50000;
         }
     }
 
     void PlusMoney()
     {
         money += hogamdo;
-        moneyT.text = $"돈 : <b>{money.ToString("F1")}</b>";
     }
 
     public void SetHogamdo(float much)
     {
         hogamdo = much;
-        hogamdoT.text = $"호감도: <b>{hogamdo.ToString("F1")}/s</b>";
     }
 }

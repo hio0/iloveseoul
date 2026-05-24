@@ -93,7 +93,7 @@ public class EpisodeManager : MonoBehaviour
         plushogamdo = 0;
         log = null;
 
-        if(targetdivision.me.charactorImages.Length != 0)
+        if (targetdivision.me.charactorImages.Length != 0)
         {
             foreach (Sprite sp in targetdivision.me.charactorImages)
             {
@@ -113,18 +113,7 @@ public class EpisodeManager : MonoBehaviour
         SetNextTalk();
 
         talkP.GetComponent<RectTransform>().anchoredPosition = new Vector3(2000, 0, 0);
-        StartCoroutine(MoveAnimation(talkP, new Vector3(0, 0, 0), 1.5f, null));
-    }
-
-    IEnumerator MoveAnimation(GameObject what, Vector3 target, float speed, Action action)
-    {
-        while (what.transform.position != target)
-        {
-            what.transform.position = Vector3.MoveTowards(what.transform.position, target, speed);
-            yield return null;
-        }
-
-        action?.Invoke();
+        StartCoroutine(UIMovement.UIMove.MoveAnimation(talkP, new Vector3(0, 0, 0), 1.5f, null));
     }
 
     void SetNextTalk()
@@ -136,6 +125,7 @@ public class EpisodeManager : MonoBehaviour
         else
         {
             Action action = null;
+            
             //SetFeels(feels.normal);
             SetFonts(normalF);
 
@@ -158,7 +148,7 @@ public class EpisodeManager : MonoBehaviour
             }
             else
             {
-                if(sb !=  null)
+                if (sb != null)
                 {
                     if (oneselecttime >= sb.selectedlog.Length)
                     {
@@ -268,12 +258,12 @@ public class EpisodeManager : MonoBehaviour
 
         if (isme)
         {
-            charimage.color = new Color(146, 146, 146);
+            charimage.color = new Color32(146, 146, 146, 255);
             nameT.text = "나";
         }
         else
         {
-            charimage.color = new Color(0, 0, 0);
+            charimage.color = new Color32(255, 255, 255, 255);
             nameT.text = targetdivision.me.name;
         }
 
@@ -311,13 +301,22 @@ public class EpisodeManager : MonoBehaviour
         targetdivision.hogamdo += plus;
         MainManager.main.GetAllHogamdo();
 
-        targetdivision.episodeCount++;
-        StartCoroutine(MoveAnimation(talkP, new Vector3(-25, 0, 0), 1.5f, EndTalk));
+        if(targetdivision.episodeCount < targetdivision.episodes.Length)
+        {
+            targetdivision.episodeCount++;
+        }
+        StartCoroutine(UIMovement.UIMove.MoveAnimation(talkP, new Vector3(-25, 0, 0), 0.5f, EndTalk));
     }
 
     public void EndTalk()
     {
         talkP.SetActive(false);
         talking = true;
+
+        if (targetdivision.episodeCount == 2)
+        {
+            MainManager.main.alldivisioncount++;
+            MainManager.main.SetDivision();
+        }
     }
 }

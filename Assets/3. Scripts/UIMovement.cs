@@ -16,7 +16,6 @@ public class UIMovement : MonoBehaviour
         {
             UIMove = this;
             DontDestroyOnLoad(gameObject);
-            DontDestroyOnLoad(fadeP.gameObject);
         }
         else
         {
@@ -58,6 +57,17 @@ public class UIMovement : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
+
+        action?.Invoke();
+    }
+
+    public IEnumerator MoveAnimation(GameObject what, Vector3 target, float speed, Action action)
+    {
+        while (what.transform.position != target)
+        {
+            what.transform.position = Vector3.MoveTowards(what.transform.position, target, speed);
+            yield return null;
+        }
 
         action?.Invoke();
     }

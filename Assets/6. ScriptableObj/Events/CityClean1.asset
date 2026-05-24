@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cae7827d85dd724ca2d85bf2fd9af17, type: 3}
   m_Name: CityClean1
   m_EditorClassIdentifier: 
+  bg: {fileID: 0}
   eventname: "\uB3C4\uC2DC \uBBF8\uAD00 \uAC00\uAFB8\uAE30 1"
   eventlog: "\uB3C4\uC2DC \uBBF8\uAD00\uC744 \uAC00\uAFD4\uBCFC\uAE4C?"
   correctlog: "\uC131\uACF5\uC801\uC73C\uB85C \uB3C4\uC2DC \uBBF8\uAD00\uC744 \uAC00\uAFB8\uC5C8\uB2E4...!"
   faillog: "\uACF5\uC0AC \uC2E4\uC218\uB85C \uC778\uD574 \uD504\uB85C\uC81D\uD2B8\uB97C
-    \uB4A4\uB85C \uBBF8\uB8E8\uAC8C \uB418\uC5C8\uB2E4.\\n\uADF8\uB140\uB294 \uAF64\uB098
-    \uC2E4\uB9DD\uD55C \uB208\uCE58\uC600\uB2E4."
+    \uB4A4\uB85C \uBBF8\uB8E8\uAC8C \uB418\uC5C8\uB2E4.\n\uADF8\uB140\uB294 \uAF64\uB098
+    \uC2E4\uB9DD\uD55C \uB208\uCE58\uC600\uB2E4..."
   succsecs: 80
   usemoney: 120
   ismust: 1

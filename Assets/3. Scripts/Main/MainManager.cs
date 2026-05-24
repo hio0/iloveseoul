@@ -3,14 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
     public static MainManager main;
 
-    public Division[] divisons;
+    public float[] nextepi;
+    public GameObject[] divisons;
+    public int alldivisioncount;
 
     public float allhogamdo;
+    bool seoultime;
+    public Button seoul;
 
     private void Awake()
     {
@@ -27,12 +32,8 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        foreach (Division div in divisons)
-        {
-            allhogamdo += div.hogamdo;
-        }
-
-        MoneyManager.Money.SetHogamdo(allhogamdo);
+        GetAllHogamdo();
+        SetDivision();
     }
 
     // Update is called once per frame
@@ -45,11 +46,49 @@ public class MainManager : MonoBehaviour
     {
         allhogamdo = 0;
 
-        foreach(Division div  in divisons)
+        foreach (GameObject ob in divisons)
         {
+            Division div = ob.GetComponent<DivisionControl>().my;
             allhogamdo += div.hogamdo;
         }
 
+        if(allhogamdo <= 0)
+        {
+            allhogamdo = 1;
+        }
+
         MoneyManager.Money.SetHogamdo(allhogamdo);
+    }
+
+    public void SetDivision()
+    {
+        if(alldivisioncount == divisons.Length)
+        {
+            return;
+        }
+
+        for(int i = 0;i < alldivisioncount; i++)
+        {
+            if(!divisons[i].GetComponent<DivisionControl>().enabled)
+            {
+                seoultime = false;
+                divisons[i].GetComponent<DivisionControl>().enabled = true;
+                StartCoroutine(AlamManager.Alam.AlamText("새로운 구 해금"));
+            }
+
+            if(i < alldivisioncount && seoultime)
+            {
+                seoul.enabled = true;
+            }
+        }
+    }
+
+    public void EndGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
     }
 }

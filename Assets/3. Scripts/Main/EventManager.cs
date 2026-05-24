@@ -4,6 +4,7 @@ using System.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class EventManager : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class EventManager : MonoBehaviour
     Event selectevent;
     public DivisionControl divi;
 
+    public Image bg;
     public RectTransform content;
     Division div;
     public GameObject eventpopup;
@@ -63,7 +65,7 @@ public class EventManager : MonoBehaviour
             }
 
             float x = Mathf.Clamp(gb.anchoredPosition.x + p, -250f, 250f);
-            float y = Mathf.Clamp(gb.anchoredPosition.y + p, -200f, 200f);
+            float y = Mathf.Clamp(gb.anchoredPosition.y + p, -150f, 150f);
             gb.gameObject.GetComponent<DivisionControl>().uipos = new Vector2(x, y);
 
 
@@ -71,11 +73,7 @@ public class EventManager : MonoBehaviour
             while (!isok)
             {
                 nowevent = Random.Range(0, events.Length);
-                if (events[nowevent].usemoney < MoneyManager.Money.hogamdo * 30)
-                {
-                    isok = true;
-                    break;
-                }
+                isok = true;
             }
             
 
@@ -90,7 +88,7 @@ public class EventManager : MonoBehaviour
 
     public void EventAlim(DivisionControl divi)
     {
-        StopCoroutine(Delete());
+        StopCoroutine("Delete");
         this.divi = divi;
         eventpopup.SetActive(true);
         eventpopup.transform.parent.gameObject.SetActive(true);
@@ -99,6 +97,7 @@ public class EventManager : MonoBehaviour
 
         selectevent = divi.myevent;
         eventnameT.text = selectevent.eventname;
+        bg.sprite = selectevent.bg;
 
         string log = null;
         if (selectevent.usemoney >= MoneyManager.Money.hogamdo * 2)
@@ -163,7 +162,7 @@ public class EventManager : MonoBehaviour
         eventT.text += "\n아무것도 하지 않기로 했다.";
         if (selectevent.ismust)
         {
-            float minus = selectevent.plushogamdo / 2;
+            float minus = selectevent.plushogamdo / 4;
 
             eventT.text += $"<b><color=#FF407F>\n호감도가 {minus.ToString("F1")}만큼 내려간 것 같다...</color></b>";
             div.hogamdo -= minus;
@@ -186,6 +185,6 @@ public class EventManager : MonoBehaviour
     {
         eventpopup.SetActive(false);
         eventpopup.transform.parent.gameObject.SetActive(false);
-        StopCoroutine(Delete());
+        StopCoroutine("Delete");
     }
 }

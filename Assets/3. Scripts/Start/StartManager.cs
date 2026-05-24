@@ -22,8 +22,7 @@ public class StartManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !isclick)
         {
-            Action action = () => SceneManager.LoadScene("Main");
-            StartCoroutine(UIMovement.UIMove.FadeIn(fadein, fadeintime, action));
+            SceneManager.LoadScene("Main");
             isclick = true;
         }
     }

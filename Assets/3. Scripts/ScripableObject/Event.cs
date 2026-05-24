@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu]
 public class Event : ScriptableObject
 {
+    public Sprite bg;
+
     public string eventname;
 
     [TextArea]
