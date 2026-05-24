@@ -1,53 +1,94 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class DivisionControl : MonoBehaviour
 {
     public Division my;
+    public Event myevent;
+    public Vector2 uipos;
 
     public GameObject eventalim;
     [SerializeField]float eventimer;
     [SerializeField] float eventzuttotimer;
-    bool timersetting;
+    [SerializeField]bool timersetting;
+    bool zuttotimersetting;
+
+    public TMP_Text hogamdoT;
 
     // Start is called before the first frame update
     void Start()
     {
         eventalim.SetActive(false);
+        timersetting = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!timersetting)
+        if(!EpisodeManager.Episode.talking)
         {
-            eventimer = Random.Range(5f, 45f);
-            timersetting = true;
-        }
-        else
-        {
-            eventimer -= Time.deltaTime;
-
-            if(eventimer < 0)
+            if (!timersetting)
             {
-                eventimer = 0;
-                eventalim.SetActive(true);
+                eventimer = Random.Range(MainManager.main.divisons.Length * 2, MainManager.main.divisons.Length * 12);
+                timersetting = true;
+            }
+            else
+            {
+                eventimer -= Time.deltaTime;
+
+                if (eventimer < 0)
+                {
+                    eventimer = 0;
+                    EventManager.Event.SetNewEvent(gameObject.GetComponent<RectTransform>());
+                    eventalim.SetActive(true);
+                }
+            }
+
+            if (eventalim.activeSelf)
+            {
+                if (!zuttotimersetting)
+                {
+                    eventzuttotimer = Random.Range(MainManager.main.divisons.Length * 5, MainManager.main.divisons.Length * 12);
+                    zuttotimersetting = true;
+                }
+                else
+                {
+                    eventzuttotimer -= Time.deltaTime;
+                    if (EventManager.Event.divi == this)
+                    {
+                        EventManager.Event.eventimer.text = eventzuttotimer.ToString("F1");
+                    }
+
+                    if (eventzuttotimer < 0)
+                    {
+                        if (eventzuttotimer < 0)
+                        {
+                            EventManager.Event.Return();
+                        }
+                        Clear();
+                    }
+                }
+            }
+            else
+            {
+                eventalim.SetActive(false);
             }
         }
+        
 
-        if(eventalim.activeSelf && eventzuttotimer == 0)
-        {
-            eventzuttotimer = Random.Range(15f, 30f);
-        }
+        //hogamdoT.text = $"<b><color=#FF407F>{my.hogamdo.ToString("F1")}/s</color><b>";
+    }
 
-        eventzuttotimer -= Time.deltaTime;
-        if (eventzuttotimer < 0)
-        {
-            eventzuttotimer = 0;
-            eventalim.SetActive(false);
+    public void Clear()
+    {
+        eventzuttotimer = 0;
+        myevent = null;
+        uipos = Vector2.zero;
+        eventalim.SetActive(false);
 
-            timersetting = false;
-        }
+        timersetting = false;
+        zuttotimersetting = false;
     }
 }

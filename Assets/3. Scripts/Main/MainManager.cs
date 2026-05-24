@@ -6,14 +6,33 @@ using UnityEngine;
 
 public class MainManager : MonoBehaviour
 {
+    public static MainManager main;
+
     public Division[] divisons;
 
     public float allhogamdo;
 
+    private void Awake()
+    {
+        if (main == null)
+        {
+            main = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        foreach (Division div in divisons)
+        {
+            allhogamdo += div.hogamdo;
+        }
 
+        MoneyManager.Money.SetHogamdo(allhogamdo);
     }
 
     // Update is called once per frame
@@ -31,6 +50,6 @@ public class MainManager : MonoBehaviour
             allhogamdo += div.hogamdo;
         }
 
-        MoneyManager.Money.hogamdo = allhogamdo;
+        MoneyManager.Money.SetHogamdo(allhogamdo);
     }
 }

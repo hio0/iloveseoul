@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 
 public class EpisodeManager : MonoBehaviour
 {
+    public static EpisodeManager Episode;
+    public bool talking;
+
     Division targetdivision;
     Episode episode;
     public enum feels
@@ -39,13 +43,28 @@ public class EpisodeManager : MonoBehaviour
     [SerializeField] Transform selects;
     [SerializeField] GameObject select;
 
-    [SerializeField] MainManager Main;
+    [SerializeField] TMP_FontAsset normalF;
+    [SerializeField] TMP_FontAsset menheraF;
+
     float plushogamdo;
+
+    private void Awake()
+    {
+        if (Episode == null)
+        {
+            Episode = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         talkP.SetActive(false);
+        talking = false;
     }
 
     // Update is called once per frame
@@ -62,6 +81,8 @@ public class EpisodeManager : MonoBehaviour
 
     public void StartTalk(Division div)
     {
+        talking = true;
+
         targetdivision = div;
         episode = targetdivision.episodes[targetdivision.episodeCount];
 
@@ -70,16 +91,20 @@ public class EpisodeManager : MonoBehaviour
         isnormaltalk = true;
         sb = null;
         plushogamdo = 0;
+        log = null;
 
-        foreach(Sprite sp in targetdivision.me.charactorImages)
+        if(targetdivision.me.charactorImages.Length != 0)
         {
-            int start = sp.name.IndexOf('_');
-            string a = sp.name.Substring(start, sp.name.Length - start);
-
-            feels feel;
-            if (Enum.TryParse(a, out feel))
+            foreach (Sprite sp in targetdivision.me.charactorImages)
             {
-                feeling[feel] = sp;
+                int start = sp.name.IndexOf('_');
+                string a = sp.name.Substring(start + 1);
+
+                feels feel;
+                if (Enum.TryParse(a, out feel))
+                {
+                    feeling[feel] = sp;
+                }
             }
         }
 
@@ -87,7 +112,7 @@ public class EpisodeManager : MonoBehaviour
         selects.gameObject.SetActive(true);
         SetNextTalk();
 
-        talkP.GetComponent<RectTransform>().localPosition = new Vector3(2000, 0, 0);
+        talkP.GetComponent<RectTransform>().anchoredPosition = new Vector3(2000, 0, 0);
         StartCoroutine(MoveAnimation(talkP, new Vector3(0, 0, 0), 1.5f, null));
     }
 
@@ -111,18 +136,8 @@ public class EpisodeManager : MonoBehaviour
         else
         {
             Action action = null;
-            SetFeels(feels.normal);
-
-            if(log.Contains("(") && log.Contains(")"))
-            {
-                int start = log.IndexOf('(');
-                int end = log.IndexOf(')');
-
-                string result = log.Substring(start + 1, end - start - 1);
-
-                SetFeels((feels)Enum.Parse(typeof(feels), result));
-            }
-
+            //SetFeels(feels.normal);
+            SetFonts(normalF);
 
             if (isnormaltalk)
             {
@@ -179,6 +194,11 @@ public class EpisodeManager : MonoBehaviour
         charimage.sprite = feeling[what];
     }
 
+    void SetFonts(TMP_FontAsset fontA)
+    {
+        mainT.font = fontA;
+    }
+
     void SetSelect()
     {
         List<Select> nowselect = new List<Select>();
@@ -229,6 +249,23 @@ public class EpisodeManager : MonoBehaviour
             log = log.Replace("#", "");
         }
 
+        if (log.Contains("[") && log.Contains("]"))
+        {
+            int start = log.IndexOf('[');
+            int end = log.IndexOf(']');
+
+            string result = log.Substring(start + 1, end - start - 1);
+
+            SetFeels((feels)Enum.Parse(typeof(feels), result));
+        }
+
+        if (log.Contains("%"))
+        {
+            SetFonts(menheraF);
+
+            log = log.Replace("%", "");
+        }
+
         if (isme)
         {
             charimage.color = new Color(146, 146, 146);
@@ -260,21 +297,19 @@ public class EpisodeManager : MonoBehaviour
 
     void Correct()
     {
-        targetdivision.hogamdo += targetdivision.hogamdo / 3;
-        plushogamdo += targetdivision.hogamdo;
+        plushogamdo += targetdivision.hogamdo / 3;
     }
 
     void Miss()
     {
-        targetdivision.hogamdo -= targetdivision.hogamdo / 5;
-        plushogamdo += targetdivision.hogamdo;
+        plushogamdo += targetdivision.hogamdo / 5;
     }
 
     void EpisodeEnd()
     {
-        targetdivision.hogamdo *= 2;
-        Main.GetAllHogamdo();
-        StartCoroutine(MoneyManager.Money.HogamdoToMoney(plushogamdo));
+        float plus = plushogamdo + targetdivision.hogamdo * 2;
+        targetdivision.hogamdo += plus;
+        MainManager.main.GetAllHogamdo();
 
         targetdivision.episodeCount++;
         StartCoroutine(MoveAnimation(talkP, new Vector3(-25, 0, 0), 1.5f, EndTalk));
@@ -283,5 +318,6 @@ public class EpisodeManager : MonoBehaviour
     public void EndTalk()
     {
         talkP.SetActive(false);
+        talking = true;
     }
 }
